@@ -618,6 +618,11 @@ def format_reference(entry: BibEntry) -> str:
 
     if entry_type in {"misc", "online", "webpage"}:
         note = entry.fields.get("note", "")
+        if not note:
+            archive_prefix = (entry.fields.get("archiveprefix") or "").strip().lower()
+            eprint = (entry.fields.get("eprint") or "").strip()
+            if archive_prefix == "arxiv" and eprint:
+                note = f"arXiv preprint arXiv:{eprint}"
         base = f"{authors} {year}, {italicize(title)}"
         if note:
             base += f", {note}"
@@ -736,7 +741,6 @@ def launch_gui() -> None:
 
     def render_rich_text(widget: Any, text: str) -> None:
         widget.configure(state="normal")
-        widget.delete("1.0", tk.END)
         italic_on = False
         buffer = []
 
